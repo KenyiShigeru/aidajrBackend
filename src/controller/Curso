@@ -1,0 +1,44 @@
+import type { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient()
+
+class Cursado
+{
+    static async darAltaCurso(req: Request, res: Response)
+    {
+        try
+        {
+            const {name, description, userId} = req.body;
+            await prisma.curso.create({
+                data: {
+                    name,
+                    description,
+                    userId
+                }
+            });
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    }
+
+    static async darBajaCurso(req: Request, res: Response)
+    {
+        try
+        {
+            const {id} = req.params;
+            await prisma.curso.delete({
+                where: {
+                    id: parseInt(id)
+                }
+            });
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    }
+
+    
+}
