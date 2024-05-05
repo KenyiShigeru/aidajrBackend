@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import type { Curso } from "../types";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
@@ -54,28 +55,47 @@ class User{
         res.json({datos:usuario})
     }
     //obteneer todos los curos por medio de un usuair
-    static async getCursosByUser(req: Request, res: Response){
-        try{
-            const {userID} = req.body;
-            //primero hacemos una busqueda condicional
-            //la parte del select establece los datos que vamos a obtener
-            const cursos = await prisma.cursado.findMany({
+   static async getCursosByUser(req: Request, res: Response){
+    try{
+        const {userID} = req.body;
+        const cursos = await prisma.cursado.findMany({
+            where: {
+                userId: parseInt(userID)
+            },
+            select:{
+                cursoId :true
+            }
+        })
+        if(cursos.length === 0){
+            return res.json({error:'El usuario no tiene cursos'})
+        }
+        /*
+         el detalle de usar promiseAll es que 
+        en el foreach se ejecutan multiples promesas y no hay tiempo
+        de solucionarlas en un solo hilo, asi que obtamos por usar Promise.all
+        y como funcion le mandamos el map, y ya este mismo ejecuta 
+        "al mismo tiempo" la todas las promesas 
+        */
+        const cursosObjArray = await Promise.all(cursos.map(async (curso)=>{
+            const cursoObj = await prisma.curso.findUnique({
                 where: {
-                    userId: parseInt(userID)
+                    id: curso.cursoId
                 },
                 select:{
-                    cursoId :true
+                    id:true,
+                    name:true,
+                    description:true 
                 }
             })
-            if(cursos.length === 0){
-                return res.json({error:'El usuario no tiene cursos'})
-            }
-            res.json({cursos})
-        }catch(e){
-            console.log(e.message)
-            res.status(500).json({error:'error en el servidor'})
-        }
+            
+            return cursoObj;
+        }))
+        res.json({cursos: cursosObjArray})
+    }catch(e){
+        console.log(e.message)
+        res.status(500).json({error:'error en el servidor'})
     }
+}
 }
 
 export default User;
