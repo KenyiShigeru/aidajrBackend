@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `Curso` (
-    `id` INTEGER NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE `Curso` (
 
 -- CreateTable
 CREATE TABLE `Cursado` (
-    `id` INTEGER NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
     `cursoId` INTEGER NOT NULL,
     `grade` INTEGER NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `Cursado` (
 
 -- CreateTable
 CREATE TABLE `User` (
-    `id` INTEGER NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(191) NOT NULL,
     `usuario` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,

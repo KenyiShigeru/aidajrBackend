@@ -53,6 +53,29 @@ class User{
 
         res.json({datos:usuario})
     }
+    //obteneer todos los curos por medio de un usuair
+    static async getCursosByUser(req: Request, res: Response){
+        try{
+            const {userID} = req.body;
+            //primero hacemos una busqueda condicional
+            //la parte del select establece los datos que vamos a obtener
+            const cursos = await prisma.cursado.findMany({
+                where: {
+                    userId: parseInt(userID)
+                },
+                select:{
+                    cursoId :true
+                }
+            })
+            if(cursos.length === 0){
+                return res.json({error:'El usuario no tiene cursos'})
+            }
+            res.json({cursos})
+        }catch(e){
+            console.log(e.message)
+            res.status(500).json({error:'error en el servidor'})
+        }
+    }
 }
 
 export default User;
