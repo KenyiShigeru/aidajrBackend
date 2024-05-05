@@ -18,4 +18,6 @@ router.get('/usuarios/:userID', User.findUserByID);
 
 router.get('/usuario-curso',User.getCursosByUser)
 
+router.get('/login',User.userLogin)
+
 export default router;

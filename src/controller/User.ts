@@ -96,6 +96,22 @@ class User{
         res.status(500).json({error:'error en el servidor'})
     }
 }
+static async userLogin(req: Request, res: Response){
+    try{
+        //treaemos nombre y contraseña desde el body
+        const {usuario, password} = req.body;	
+        const usuarioEncontrado = await prisma.user.findFirst({
+            where: {
+                usuario,
+                password
+            }
+        }) 
+        console.log(usuarioEncontrado)
+        res.send('conectados')
+    }catch(e){
+        console.log(e.message)
+    }
+}
 }
 
 export default User;
