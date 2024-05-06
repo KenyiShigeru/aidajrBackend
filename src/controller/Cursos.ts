@@ -14,5 +14,21 @@ export default class Cursos {
             console.log(e.message)
         }
     }
+    static async addCurso(req: Request, res: Response){//!este queda pendiente
+        try{
+            //va a ser metodo post
+            const {name, descripcion,id} = req.body;
+            //como es un metodo de agregacion solo es necesario agregarlo
+            await prisma.cursado.create({
+                data:{
+                    name,
+                    descripcion,
+                    id
+                }
+            })
+        }catch(e){
+            console.log(e.message)
+        }
+    }
     
 }

@@ -57,7 +57,7 @@ class User{
     //obteneer todos los curos por medio de un usuair
    static async getCursosByUser(req: Request, res: Response){
     try{
-        const {userID} = req.body;
+        const {userID} = req.params;
         const cursos = await prisma.cursado.findMany({
             where: {
                 userId: parseInt(userID)
@@ -67,7 +67,7 @@ class User{
             }
         })
         if(cursos.length === 0){
-            return res.json({error:'El usuario no tiene cursos'})
+            return res.json({cursos:[]})
         }
         /*
          el detalle de usar promiseAll es que 
@@ -100,14 +100,25 @@ static async userLogin(req: Request, res: Response){
     try{
         //treaemos nombre y contraseña desde el body
         const {usuario, password} = req.body;	
+        console.log(usuario,password)
         const usuarioEncontrado = await prisma.user.findFirst({
             where: {
                 usuario,
                 password
+            },
+            select:{
+                password:false,
+                cursados:false,
+                usuario:true,
+                id:true,
+                email:true
             }
         }) 
-        console.log(usuarioEncontrado)
-        res.send('conectados')
+        if(!usuario){
+            return res.status(404).json({error:'credenciales incorrectas'})
+        }
+        res.json({usuarioEncontrado})
+     
     }catch(e){
         console.log(e.message)
     }

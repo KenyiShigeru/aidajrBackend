@@ -16,8 +16,8 @@ router.post("/usuarios",User.createUser);
 
 router.get('/usuarios/:userID', User.findUserByID);
 
-router.get('/usuario-curso',User.getCursosByUser)
+router.get('/usuario-curso/:userID',User.getCursosByUser)
 
-router.get('/login',User.userLogin)
+router.post('/login',User.userLogin)
 
 export default router;
