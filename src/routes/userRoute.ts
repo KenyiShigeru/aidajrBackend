@@ -5,11 +5,10 @@ import User from "../controller/User";
 
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", (req, res) => { //!--> responde
     res.send("Hello World");
 });
 
-console.log("Soy una clase usuario");
 
 router.get("/usuarios", User.getUser);
 
@@ -17,5 +16,8 @@ router.post("/usuarios",User.createUser);
 
 router.get('/usuarios/:userID', User.findUserByID);
 
+router.get('/usuario-curso/:userID',User.getCursosByUser)
+
+router.post('/login',User.userLogin)
 
 export default router;

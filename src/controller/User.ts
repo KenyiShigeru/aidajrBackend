@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import type { Curso } from "../types";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
@@ -53,6 +54,75 @@ class User{
 
         res.json({datos:usuario})
     }
+    //obteneer todos los curos por medio de un usuair
+   static async getCursosByUser(req: Request, res: Response){
+    try{
+        const {userID} = req.params;
+        const cursos = await prisma.cursado.findMany({
+            where: {
+                userId: parseInt(userID)
+            },
+            select:{
+                cursoId :true
+            }
+        })
+        if(cursos.length === 0){
+            return res.json({cursos:[]})
+        }
+        /*
+         el detalle de usar promiseAll es que 
+        en el foreach se ejecutan multiples promesas y no hay tiempo
+        de solucionarlas en un solo hilo, asi que obtamos por usar Promise.all
+        y como funcion le mandamos el map, y ya este mismo ejecuta 
+        "al mismo tiempo" la todas las promesas 
+        */
+        const cursosObjArray = await Promise.all(cursos.map(async (curso)=>{
+            const cursoObj = await prisma.curso.findUnique({
+                where: {
+                    id: curso.cursoId
+                },
+                select:{
+                    id:true,
+                    name:true,
+                    description:true 
+                }
+            })
+            
+            return cursoObj;
+        }))
+        res.json({cursos: cursosObjArray})
+    }catch(e){
+        console.log(e.message)
+        res.status(500).json({error:'error en el servidor'})
+    }
+}
+static async userLogin(req: Request, res: Response){
+    try{
+        //treaemos nombre y contraseña desde el body
+        const {usuario, password} = req.body;	
+        console.log(usuario,password)
+        const usuarioEncontrado = await prisma.user.findFirst({
+            where: {
+                usuario,
+                password
+            },
+            select:{
+                password:false,
+                cursados:false,
+                usuario:true,
+                id:true,
+                email:true
+            }
+        }) 
+        if(!usuario){
+            return res.status(404).json({error:'credenciales incorrectas'})
+        }
+        res.json({usuarioEncontrado})
+     
+    }catch(e){
+        console.log(e.message)
+    }
+}
 }
 
 export default User;
